@@ -1,1 +1,2876 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>HeroesVerse</title>
 
+<style>
+:root{
+ --bg:#070707;
+ --card:#111;
+ --text:#fff;
+ --muted:#999;
+ --accent:#ed1018;
+ --border:#292929;
+ --size:16px;
+ --glow:0 0 14px rgba(237,16,24,.35);
+}
+
+*{box-sizing:border-box}
+
+html{
+ font-size:var(--size);
+ scroll-behavior:smooth;
+}
+
+body{
+ margin:0;
+ background:var(--bg);
+ color:var(--text);
+ font-family:Arial,sans-serif;
+ transition:.25s;
+}
+
+body.noeffects *{
+ transition:none!important;
+ animation:none!important;
+}
+
+body.highcontrast{
+ --bg:#000;
+ --card:#000;
+ --text:#fff;
+ --muted:#fff;
+ --border:#fff;
+}
+
+button{
+ border:1px solid var(--accent);
+ border-radius:10px;
+ padding:12px 16px;
+ background:#191919;
+ color:#fff;
+ font-weight:bold;
+ cursor:pointer;
+ transition:.2s;
+}
+
+button:hover{
+ box-shadow:var(--glow);
+}
+
+button.red,
+.active{
+ background:var(--accent);
+ color:#fff;
+}
+
+input,textarea,select{
+ width:100%;
+ padding:14px;
+ margin:6px 0 12px;
+ border-radius:10px;
+ border:1px solid var(--border);
+ background:#151515;
+ color:var(--text);
+ outline:none;
+}
+
+textarea{
+ min-height:110px;
+ resize:vertical;
+}
+
+.card{
+ background:var(--card);
+ border:1px solid var(--border);
+ border-radius:18px;
+ padding:20px;
+ margin:15px 0;
+}
+
+.logo{
+ font-size:34px;
+ font-weight:900;
+ letter-spacing:-1px;
+}
+
+.logo span{
+ color:var(--accent);
+}
+
+.small{
+ color:var(--muted);
+}
+
+.creator{
+ color:var(--accent);
+ font-weight:bold;
+}
+
+.hidden{
+ display:none!important;
+}
+
+.empty{
+ text-align:center;
+ padding:40px 20px;
+ color:var(--muted);
+}
+
+.grid{
+ display:grid;
+ grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+ gap:15px;
+}
+
+/* TOP BAR */
+
+.topbar{
+ height:76px;
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+ padding:0 22px;
+ border-bottom:1px solid var(--border);
+ background:var(--bg);
+ position:sticky;
+ top:0;
+ z-index:50;
+}
+
+.menuButton{
+ width:52px;
+ height:48px;
+ font-size:27px;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ background:#151515;
+}
+
+.menuButton:hover{
+ background:var(--accent);
+}
+
+/* SIDE MENU */
+
+.overlay{
+ position:fixed;
+ inset:0;
+ background:rgba(0,0,0,.65);
+ z-index:90;
+ display:none;
+}
+
+.overlay.show{
+ display:block;
+}
+
+.sideMenu{
+ position:fixed;
+ left:0;
+ top:0;
+ bottom:0;
+ width:300px;
+ max-width:85%;
+ background:#0d0d0d;
+ border-right:1px solid var(--border);
+ z-index:100;
+ transform:translateX(-100%);
+ transition:.25s;
+ overflow-y:auto;
+ padding:20px;
+}
+
+.sideMenu.open{
+ transform:translateX(0);
+}
+
+.sideLogo{
+ padding:8px 5px 22px;
+ border-bottom:1px solid var(--border);
+ margin-bottom:15px;
+}
+
+.menuItem{
+ display:block;
+ width:100%;
+ border:0;
+ border-radius:10px;
+ background:transparent;
+ text-align:left;
+ padding:15px;
+ margin:4px 0;
+ font-size:16px;
+ color:#ddd;
+}
+
+.menuItem:hover,
+.menuItem.active{
+ background:var(--accent);
+ color:#fff;
+}
+
+.menuLogout{
+ margin-top:15px;
+ border-top:1px solid var(--border);
+ padding-top:15px;
+}
+
+/* LOGIN */
+
+.loginPage{
+ min-height:100vh;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ padding:25px;
+}
+
+.loginCard{
+ width:100%;
+ max-width:440px;
+}
+
+.loginCard .logo{
+ color:#fff;
+}
+
+.loginCard .logo span{
+ color:var(--accent);
+}
+
+.loginButton{
+ width:100%;
+ font-size:16px;
+ padding:15px;
+ background:var(--accent);
+}
+
+/* APP */
+
+main{
+ width:92%;
+ max-width:1100px;
+ margin:auto;
+ padding:25px 0 60px;
+}
+
+.heroTitle{
+ margin-top:5px;
+ font-size:32px;
+}
+
+.sectionTitle{
+ font-size:28px;
+}
+
+.stat{
+ font-size:28px;
+ font-weight:bold;
+ color:var(--accent);
+}
+
+/* SETTINGS */
+
+.settingsGroup{
+ margin:18px 0;
+}
+
+.settingsGroup h3{
+ margin-bottom:5px;
+}
+
+.settingRow{
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+ gap:15px;
+ padding:14px 0;
+ border-bottom:1px solid var(--border);
+}
+
+.settingText{
+ flex:1;
+}
+
+.settingText strong{
+ display:block;
+ margin-bottom:4px;
+}
+
+.settingText span{
+ color:var(--muted);
+ font-size:14px;
+}
+
+.switch{
+ width:50px;
+ height:27px;
+ border-radius:20px;
+ background:#333;
+ position:relative;
+ border:0;
+ flex:none;
+}
+
+.switch:after{
+ content:"";
+ width:21px;
+ height:21px;
+ background:#fff;
+ border-radius:50%;
+ position:absolute;
+ top:3px;
+ left:4px;
+ transition:.2s;
+}
+
+.switch.on{
+ background:var(--accent);
+}
+
+.switch.on:after{
+ left:25px;
+}
+
+/* LIGHT MODE */
+
+body.light{
+ --bg:#f4f4f4;
+ --card:#fff;
+ --text:#151515;
+ --muted:#555;
+ --border:#d5d5d5;
+}
+
+body.light .topbar{
+ background:#fff;
+}
+
+body.light .sideMenu{
+ background:#fff;
+}
+
+body.light button{
+ background:#eee;
+ color:#111;
+}
+
+body.light button.red,
+body.light .active{
+ background:var(--accent);
+ color:#fff;
+}
+
+body.light input,
+body.light textarea,
+body.light select{
+ background:#fff;
+ color:#111;
+}
+
+body.light .menuItem{
+ color:#222;
+}
+
+body.light .menuItem:hover,
+body.light .menuItem.active{
+ color:#fff;
+}
+
+/* RESPONSIVE */
+
+@media(max-width:600px){
+ .logo{font-size:28px}
+ .heroTitle{font-size:27px}
+ .topbar{padding:0 15px}
+ main{width:94%}
+ .card{padding:17px}
+}
+</style>
+</head>
+
+<body>
+
+<!-- ================= LOGIN ================= -->
+
+<div id="loginPage" class="loginPage">
+
+<div class="card loginCard">
+
+<div class="logo">
+HEROES<span>VERSE</span>
+</div>
+
+<h1>Welcome</h1>
+
+<p>Create your account or sign in.</p>
+
+<input
+ id="accountName"
+ placeholder="Account name"
+ autocomplete="username">
+
+<input
+ id="accountPassword"
+ type="password"
+ placeholder="Password"
+ autocomplete="current-password">
+
+<button
+ class="loginButton"
+ onclick="login()">
+CREATE ACCOUNT / SIGN IN
+</button>
+
+<p class="small">
+Only your account name and password are required.
+</p>
+
+</div>
+
+</div>
+
+
+<!-- ================= APP ================= -->
+
+<div id="app" class="hidden">
+
+<header class="topbar">
+
+<div class="logo">
+HEROES<span>VERSE</span>
+</div>
+
+<button
+ class="menuButton"
+ onclick="openMenu()"
+ aria-label="Open menu">
+☰
+</button>
+
+</header>
+
+
+<!-- ================= SIDE MENU ================= -->
+
+<div
+ id="overlay"
+ class="overlay"
+ onclick="closeMenu()">
+</div>
+
+<aside id="sideMenu" class="sideMenu">
+
+<div class="sideLogo">
+
+<div class="logo">
+HEROES<span>VERSE</span>
+</div>
+
+<p class="small">
+Welcome, <span id="menuUser"></span>
+</p>
+
+</div>
+
+<button class="menuItem active"
+data-page="home"
+onclick="go('home')">
+🏠 Home
+</button>
+
+<button class="menuItem"
+data-page="universe"
+onclick="go('universe')">
+🌌 My Universe
+</button>
+
+<button class="menuItem"
+data-page="characters"
+onclick="go('characters')">
+🧑‍🚀 Characters
+</button>
+
+<button class="menuItem"
+data-page="powers"
+onclick="go('powers')">
+⚡ Powers
+</button>
+
+<button class="menuItem"
+data-page="teams"
+onclick="go('teams')">
+👥 Teams
+</button>
+
+<button class="menuItem"
+data-page="locations"
+onclick="go('locations')">
+🌍 Locations
+</button>
+
+<button class="menuItem"
+data-page="discover"
+onclick="go('discover')">
+🔎 Discover
+</button>
+
+<button class="menuItem"
+data-page="vexa"
+onclick="go('vexa')">
+🤖 VEXA
+</button>
+
+<div class="menuLogout">
+
+<button class="menuItem"
+onclick="logout()">
+🚪 Log Out
+</button>
+
+<button class="menuItem"
+data-page="settings"
+onclick="go('settings')">
+⚙️ Settings
+</button>
+
+</div>
+
+</aside>
+
+
+<!-- ================= MAIN ================= -->
+
+<main>
+
+<!-- HOME -->
+
+<section id="home">
+
+<div class="card">
+
+<div class="logo">
+HEROES<span>VERSE</span>
+</div>
+
+<h1 class="heroTitle">
+Welcome, <span id="welcome"></span>!
+</h1>
+
+<p>
+Build your own superhero universe.
+</p>
+
+</div>
+
+<div class="grid">
+
+<div class="card">
+<h2>🧑‍🚀 Characters</h2>
+<p>Create heroes, villains and other characters.</p>
+<button class="red" onclick="go('characters')">
+CREATE
+</button>
+</div>
+
+<div class="card">
+<h2>⚡ Powers</h2>
+<p>Create unique powers and abilities.</p>
+<button class="red" onclick="go('powers')">
+CREATE
+</button>
+</div>
+
+<div class="card">
+<h2>👥 Teams</h2>
+<p>Create superhero and villain teams.</p>
+<button class="red" onclick="go('teams')">
+CREATE
+</button>
+</div>
+
+<div class="card">
+<h2>🌍 Locations</h2>
+<p>Create cities, planets and dimensions.</p>
+<button class="red" onclick="go('locations')">
+CREATE
+</button>
+</div>
+
+</div>
+
+</section>
+
+
+<!-- UNIVERSE -->
+
+<section id="universe" class="hidden">
+
+<h1 class="sectionTitle">🌌 My Universe</h1>
+
+<div class="card">
+
+<input id="universeName"
+placeholder="Universe name">
+
+<textarea
+id="universeDescription"
+placeholder="Universe description"></textarea>
+
+<button class="red"
+onclick="createUniverse()">
+SAVE UNIVERSE
+</button>
+
+</div>
+
+<div id="universeDisplay"></div>
+
+</section>
+
+
+<!-- CHARACTERS -->
+
+<section id="characters" class="hidden">
+
+<h1 class="sectionTitle">🧑‍🚀 Characters</h1>
+
+<div class="card">
+
+<input id="characterName"
+placeholder="Character name">
+
+<select id="characterType">
+<option>Hero</option>
+<option>Villain</option>
+<option>Anti-Hero</option>
+<option>Sidekick</option>
+<option>Civilian</option>
+<option>Other</option>
+</select>
+
+<input id="characterPowers"
+placeholder="Powers">
+
+<textarea
+id="characterDescription"
+placeholder="Character description"></textarea>
+
+<button class="red"
+onclick="createCharacter()">
+ADD CHARACTER
+</button>
+
+</div>
+
+<div id="characterList" class="grid"></div>
+
+</section>
+
+
+<!-- POWERS -->
+
+<section id="powers" class="hidden">
+
+<h1 class="sectionTitle">⚡ Powers</h1>
+
+<div class="card">
+
+<input id="powerName"
+placeholder="Power name">
+
+<textarea
+id="powerDescription"
+placeholder="Power description"></textarea>
+
+<button class="red"
+onclick="createPower()">
+ADD POWER
+</button>
+
+</div>
+
+<div id="powerList" class="grid"></div>
+
+</section>
+
+
+<!-- TEAMS -->
+
+<section id="teams" class="hidden">
+
+<h1 class="sectionTitle">👥 Teams</h1>
+
+<div class="card">
+
+<input id="teamName"
+placeholder="Team name">
+
+<textarea
+id="teamDescription"
+placeholder="Team description"></textarea>
+
+<button class="red"
+onclick="createTeam()">
+ADD TEAM
+</button>
+
+</div>
+
+<div id="teamList" class="grid"></div>
+
+</section>
+
+
+<!-- LOCATIONS -->
+
+<section id="locations" class="hidden">
+
+<h1 class="sectionTitle">🌍 Locations</h1>
+
+<div class="card">
+
+<input id="locationName"
+placeholder="Location name">
+
+<select id="locationType">
+<option>City</option>
+<option>Country</option>
+<option>Planet</option>
+<option>Dimension</option>
+<option>Headquarters</option>
+<option>Other</option>
+</select>
+
+<textarea
+id="locationDescription"
+placeholder="Location description"></textarea>
+
+<button class="red"
+onclick="createLocation()">
+ADD LOCATION
+</button>
+
+</div>
+
+<div id="locationList" class="grid"></div>
+
+</section>
+
+
+<!-- DISCOVER -->
+
+<section id="discover" class="hidden">
+
+<h1 class="sectionTitle">🔎 Discover</h1>
+
+<div id="discoverList"></div>
+
+</section>
+
+
+<!-- VEXA -->
+
+<section id="vexa" class="hidden">
+
+<h1 class="sectionTitle">🤖 VEXA</h1>
+
+<div class="card">
+
+<h2>Virtual Existence Assistant</h2>
+
+<p>
+Give VEXA an idea and she will build elements for your universe.
+</p>
+
+<textarea
+id="vexaPrompt"
+placeholder="Example: Build a hero twin brother and sister with opposite powers"></textarea>
+
+<button class="red"
+onclick="askVexa()">
+ASK VEXA
+</button>
+
+</div>
+
+<div id="vexaResult"></div>
+
+</section>
+
+
+<!-- ================= SETTINGS ================= -->
+
+<section id="settings" class="hidden">
+
+<h1>HEROESVERSE — SETTINGS</h1>
+
+
+<!-- APPEARANCE -->
+
+<div class="card settingsGroup">
+
+<h2>🎨 Appearance</h2>
+
+<div class="settingRow">
+<div class="settingText">
+<strong>Light Mode ☀️</strong>
+<span>Bright interface</span>
+</div>
+<button onclick="setAppearance('light')">USE</button>
+</div>
+
+<div class="settingRow">
+<div class="settingText">
+<strong>Dark Mode 🌙</strong>
+<span>Dark superhero-style interface</span>
+</div>
+<button onclick="setAppearance('dark')">USE</button>
+</div>
+
+<div class="settingRow">
+<div class="settingText">
+<strong>System Default</strong>
+<span>Automatically follows the device</span>
+</div>
+<button onclick="setAppearance('system')">USE</button>
+</div>
+
+<div class="settingRow">
+<div class="settingText">
+<strong>Theme Color</strong>
+<span>Choose the HeroesVerse accent color</span>
+</div>
+
+<input
+id="themeColor"
+type="color"
+value="#ed1018"
+oninput="changeTheme(this.value)"
+style="width:65px;height:45px;padding:2px;margin:0">
+
+</div>
+
+<div class="settingRow">
+
+<div class="settingText">
+<strong>UI Effects</strong>
+<span>Enable or disable glow and animations</span>
+</div>
+
+<button
+id="effectsButton"
+class="switch on"
+onclick="toggleSetting('effects')">
+</button>
+
+</div>
+
+</div>
+
+
+<!-- ACCOUNT -->
+
+<div class="card settingsGroup">
+
+<h2>👤 Account</h2>
+
+<div class="settingRow">
+<div class="settingText">
+<strong>Profile</strong>
+<span id="profileName"></span>
+</div>
+</div>
+
+<div class="settingRow">
+
+<div class="settingText">
+<strong>Change Username</strong>
+<span>Change the name displayed on your profile</span>
+</div>
+
+<button onclick="changeUsername()">CHANGE</button>
+
+</div>
+
+<div class="settingRow">
+
+<div class="settingText">
+<strong>Change Password</strong>
+<span>Update your account password</span>
+</div>
+
+<button onclick="changePassword()">CHANGE</button>
+
+</div>
+
+<div class="settingRow">
+<div class="settingText">
+<strong>Profile Picture</strong>
+<span>Profile picture support</span>
+</div>
+<button onclick="alert('Profile picture selector can be connected here.')">
+OPEN
+</button>
+</div>
+
+<div class="settingRow">
+<div class="settingText">
+<strong>Sign Out</strong>
+</div>
+<button onclick="logout()">SIGN OUT</button>
+</div>
+
+</div>
+
+
+<!-- HEROES -->
+
+<div class="card settingsGroup">
+
+<h2>🦸 Heroes</h2>
+
+<div class="settingRow">
+<div class="settingText">
+<strong>My Heroes</strong>
+<span>Manage your heroes</span>
+</div>
+<button onclick="go('characters')">OPEN</button>
+</div>
+
+<div class="settingRow">
+<div class="settingText">
+<strong>Favorite Heroes</strong>
+<span>Your favorite heroes</span>
+</div>
+<button onclick="alert('Favorite Heroes is ready for future favorites.')">OPEN</button>
+</div>
+
+<div class="settingRow">
+<div class="settingText">
+<strong>Hero Display</strong>
+<span>Hero display preferences</span>
+</div>
+</div>
+
+<div class="settingRow">
+<div class="settingText">
+<strong>Show Hero Stats</strong>
+</div>
+<button id="statsSwitch"
+class="switch on"
+onclick="toggleSetting('stats')">
+</button>
+</div>
+
+<div class="settingRow">
+<div class="settingText">
+<strong>Show Secret Identities</strong>
+<span>Only if the profile allows it</span>
+</div>
+<button id="identitySwitch"
+class="switch on"
+onclick="toggleSetting('identity')">
+</button>
+</div>
+
+</div>
+
+
+<!-- UNIVERSE -->
+
+<div class="card settingsGroup">
+
+<h2>🌎 Universe</h2>
+
+<div class="settingRow">
+<div class="settingText"><strong>Universe Selection</strong></div>
+<button onclick="go('universe')">OPEN</button>
+</div>
+
+<div class="settingRow">
+<div class="settingText"><strong>Timeline</strong></div>
+<button onclick="alert('Timeline settings are ready for your universe timeline system.')">OPEN</button>
+</div>
+
+<div class="settingRow">
+<div class="settingText"><strong>Locations</strong></div>
+<button onclick="go('locations')">OPEN</button>
+</div>
+
+<div class="settingRow">
+<div class="settingText"><strong>Teams</strong></div>
+<button onclick="go('teams')">OPEN</button>
+</div>
+
+<div class="settingRow">
+<div class="settingText"><strong>Villains</strong></div>
+<button onclick="go('characters')">OPEN</button>
+</div>
+
+<div class="settingRow">
+<div class="settingText"><strong>Events</strong></div>
+<button onclick="alert('Events can be added to your universe.')">OPEN</button>
+</div>
+
+<div class="settingRow">
+<div class="settingText">
+<strong>Canon / Alternate Universe</strong>
+</div>
+<button onclick="alert('Canon / Alternate Universe selector opened.')">
+OPEN
+</button>
+</div>
+
+</div>
+
+
+<!-- NOTIFICATIONS -->
+
+<div class="card settingsGroup">
+
+<h2>🔔 Notifications</h2>
+
+<div class="settingRow">
+<div class="settingText"><strong>New Episode/Chapter</strong></div>
+<button class="switch on" onclick="toggleVisual(this)"></button>
+</div>
+
+<div class="settingRow">
+<div class="settingText"><strong>New Hero</strong></div>
+<button class="switch on" onclick="toggleVisual(this)"></button>
+</div>
+
+<div class="settingRow">
+<div class="settingText"><strong>New Villain</strong></div>
+<button class="switch on" onclick="toggleVisual(this)"></button>
+</div>
+
+<div class="settingRow">
+<div class="settingText"><strong>Universe Updates</strong></div>
+<button class="switch on" onclick="toggleVisual(this)"></button>
+</div>
+
+<div class="settingRow">
+<div class="settingText"><strong>Announcements</strong></div>
+<button class="switch on" onclick="toggleVisual(this)"></button>
+</div>
+
+</div>
+
+
+<!-- AUDIO -->
+
+<div class="card settingsGroup">
+
+<h2>🔊 Audio</h2>
+
+<label>Master Volume</label>
+<input type="range" min="0" max="100" value="100"
+oninput="audioSetting('master',this.value)">
+
+<label>Music</label>
+<input type="range" min="0" max="100" value="100"
+oninput="audioSetting('music',this.value)">
+
+<label>Sound Effects</label>
+<input type="range" min="0" max="100" value="100"
+oninput="audioSetting('effectsAudio',this.value)">
+
+<label>Voice Volume</label>
+<input type="range" min="0" max="100" value="100"
+oninput="audioSetting('voice',this.value)">
+
+<div class="settingRow">
+<div class="settingText">
+<strong>Mute All</strong>
+</div>
+<button id="muteSwitch"
+class="switch"
+onclick="toggleSetting('mute')">
+</button>
+</div>
+
+</div>
+
+
+<!-- LANGUAGE -->
+
+<div class="card settingsGroup">
+
+<h2>🌐 Language</h2>
+
+<select id="languageSelect"
+onchange="setLanguage(this.value)">
+<option value="English">English</option>
+<option value="Spanish">Spanish</option>
+<option value="French">French</option>
+<option value="Portuguese">Portuguese</option>
+</select>
+
+<p class="small">
+More languages later.
+</p>
+
+</div>
+
+
+<!-- ACCESSIBILITY -->
+
+<div class="card settingsGroup">
+
+<h2>♿ Accessibility</h2>
+
+<label>Text Size</label>
+
+<select onchange="setTextSize(this.value)">
+<option value="14px">Small</option>
+<option value="16px" selected>Normal</option>
+<option value="18px">Large</option>
+<option value="20px">Extra Large</option>
+</select>
+
+<div class="settingRow">
+<div class="settingText"><strong>High Contrast</strong></div>
+<button id="contrastSwitch"
+class="switch"
+onclick="toggleSetting('contrast')">
+</button>
+</div>
+
+<div class="settingRow">
+<div class="settingText"><strong>Reduce Animations</strong></div>
+<button id="reduceSwitch"
+class="switch"
+onclick="toggleSetting('reduce')">
+</button>
+</div>
+
+<div class="settingRow">
+<div class="settingText">
+<strong>Screen Reader Support</strong>
+<span>Uses accessible labels and controls</span>
+</div>
+<button class="switch on"
+onclick="toggleVisual(this)">
+</button>
+</div>
+
+<div class="settingRow">
+<div class="settingText">
+<strong>Colorblind-Friendly UI</strong>
+</div>
+<button class="switch"
+onclick="toggleVisual(this)">
+</button>
+</div>
+
+</div>
+
+
+<!-- PRIVACY -->
+
+<div class="card settingsGroup">
+
+<h2>🔒 Privacy & Security</h2>
+
+<div class="settingRow">
+<div class="settingText">
+<strong>Privacy Settings</strong>
+</div>
+<button onclick="alert('Privacy settings opened.')">OPEN</button>
+</div>
+
+<div class="settingRow">
+<div class="settingText">
+<strong>Who Can See My Profile</strong>
+</div>
+<select style="width:150px;margin:0">
+<option>Everyone</option>
+<option>Friends</option>
+<option>Only Me</option>
+</select>
+</div>
+
+<div class="settingRow">
+<div class="settingText">
+<strong>Blocked Users</strong>
+</div>
+<button onclick="alert('No blocked users.')">OPEN</button>
+</div>
+
+<div class="settingRow">
+<div class="settingText">
+<strong>Account Security</strong>
+</div>
+<button onclick="alert('Your account uses a local account system.')">CHECK</button>
+</div>
+
+<div class="settingRow">
+<div class="settingText">
+<strong>Data & Permissions</strong>
+</div>
+<button onclick="alert('Your HeroesVerse data is stored locally in this prototype.')">OPEN</button>
+</div>
+
+</div>
+
+
+<!-- DATA -->
+
+<div class="card settingsGroup">
+
+<h2>💾 Data</h2>
+
+<div class="settingRow">
+<div class="settingText">
+<strong>Save Progress</strong>
+<span>Your data is automatically saved</span>
+</div>
+<span>✓</span>
+</div>
+
+<div class="settingRow">
+<div class="settingText">
+<strong>Cloud Sync</strong>
+<span>Requires an online backend</span>
+</div>
+<button onclick="alert('Cloud Sync requires a real online database.')">
+INFO
+</button>
+</div>
+
+<div class="settingRow">
+<div class="settingText">
+<strong>Reset Local Data</strong>
+</div>
+<button onclick="resetData()">RESET</button>
+</div>
+
+<div class="settingRow">
+<div class="settingText">
+<strong>Download My Data</strong>
+</div>
+<button onclick="downloadData()">DOWNLOAD</button>
+</div>
+
+</div>
+
+
+<!-- ABOUT -->
+
+<div class="card settingsGroup">
+
+<h2>ℹ️ About</h2>
+
+<p><strong>About HEROESVERSE</strong></p>
+<p><strong>What's New</strong></p>
+<p><strong>Credits</strong></p>
+<p><strong>Terms</strong></p>
+<p><strong>Privacy Policy</strong></p>
+<p class="small"><strong>Version:</strong> 1.0.0</p>
+
+</div>
+
+
+<!-- HELP -->
+
+<div class="card settingsGroup">
+
+<h2>🆘 Help</h2>
+
+<div class="settingRow">
+<div class="settingText"><strong>Help Center</strong></div>
+<button onclick="alert('HeroesVerse Help Center')">OPEN</button>
+</div>
+
+<div class="settingRow">
+<div class="settingText"><strong>Report a Problem</strong></div>
+<button onclick="alert('Problem report form opened.')">OPEN</button>
+</div>
+
+<div class="settingRow">
+<div class="settingText"><strong>Contact Support</strong></div>
+<button onclick="alert('Support contact opened.')">OPEN</button>
+</div>
+
+<div class="settingRow">
+<div class="settingText"><strong>FAQ</strong></div>
+<button onclick="alert('HeroesVerse FAQ')">OPEN</button>
+</div>
+
+</div>
+
+
+<!-- DARK MODE DESIGN -->
+
+<div class="card settingsGroup">
+
+<h2>🌑 Dark Mode Design</h2>
+
+<p>Background: near-black</p>
+<p>Cards: dark gray</p>
+<p>Text: white</p>
+<p>Accent: your HEROESVERSE hero color</p>
+<p>Buttons: glowing accent borders</p>
+
+</div>
+
+
+<!-- LIGHT MODE DESIGN -->
+
+<div class="card settingsGroup">
+
+<h2>☀️ Light Mode Design</h2>
+
+<p>Background: white/light gray</p>
+<p>Cards: white</p>
+<p>Text: dark gray/black</p>
+<p>Accent: same HEROESVERSE color</p>
+<p>Buttons: clean colored borders</p>
+
+</div>
+
+</section>
+
+</main>
+</div>
+
+
+<script>
+
+/* =====================================================
+   ACCOUNT SYSTEM
+===================================================== */
+
+let user=JSON.parse(
+ localStorage.getItem("heroesVerseUser")
+);
+
+let data={
+ universe:null,
+ published:false,
+ characters:[],
+ powers:[],
+ teams:[],
+ locations:[],
+ weapons:[]
+};
+
+let settings=JSON.parse(
+ localStorage.getItem("heroesVerseSettings")
+)||{
+ appearance:"dark",
+ accent:"#ed1018",
+ effects:true,
+ stats:true,
+ identity:true,
+ mute:false,
+ contrast:false,
+ reduce:false,
+ textSize:"16px",
+ language:"English"
+};
+
+
+/* =====================================================
+   STORAGE
+===================================================== */
+
+function dataKey(){
+ return "heroesVerseData_"+
+ user.name.toLowerCase();
+}
+
+function saveData(){
+ localStorage.setItem(
+  dataKey(),
+  JSON.stringify(data)
+ );
+}
+
+function loadData(){
+
+ let saved=localStorage.getItem(dataKey());
+
+ if(saved){
+
+  try{
+   data=JSON.parse(saved);
+  }
+
+  catch(e){
+   data=createEmptyData();
+  }
+
+ }
+
+}
+
+function createEmptyData(){
+ return{
+  universe:null,
+  published:false,
+  characters:[],
+  powers:[],
+  teams:[],
+  locations:[],
+  weapons:[]
+ };
+}
+
+
+/* =====================================================
+   LOGIN
+===================================================== */
+
+function login(){
+
+ let name=document
+  .getElementById("accountName")
+  .value.trim();
+
+ let password=document
+  .getElementById("accountPassword")
+  .value;
+
+ if(!name||!password){
+
+  alert("Please enter your account name and password.");
+
+  return;
+ }
+
+ let key=
+ "heroesVerseAccount_"+
+ name.toLowerCase();
+
+ let existing=
+ localStorage.getItem(key);
+
+ if(existing){
+
+  let account=JSON.parse(existing);
+
+  if(account.password!==password){
+
+   alert("Incorrect password.");
+
+   return;
+  }
+
+ }
+
+ else{
+
+  localStorage.setItem(
+   key,
+   JSON.stringify({
+    name:name,
+    password:password
+   })
+  );
+
+ }
+
+ user={name:name};
+
+ localStorage.setItem(
+  "heroesVerseUser",
+  JSON.stringify(user)
+ );
+
+ loadData();
+
+ startApp();
+}
+
+
+/* =====================================================
+   START APP
+===================================================== */
+
+function startApp(){
+
+ document
+  .getElementById("loginPage")
+  .classList.add("hidden");
+
+ document
+  .getElementById("app")
+  .classList.remove("hidden");
+
+ document
+  .getElementById("welcome")
+  .textContent=user.name;
+
+ document
+  .getElementById("menuUser")
+  .textContent=user.name;
+
+ document
+  .getElementById("profileName")
+  .textContent=user.name;
+
+ applySettings();
+
+ renderAll();
+}
+
+
+/* =====================================================
+   LOGOUT
+===================================================== */
+
+function logout(){
+
+ localStorage.removeItem(
+  "heroesVerseUser"
+ );
+
+ location.reload();
+}
+
+
+/* =====================================================
+   MENU
+===================================================== */
+
+function openMenu(){
+
+ document
+  .getElementById("sideMenu")
+  .classList.add("open");
+
+ document
+  .getElementById("overlay")
+  .classList.add("show");
+}
+
+function closeMenu(){
+
+ document
+  .getElementById("sideMenu")
+  .classList.remove("open");
+
+ document
+  .getElementById("overlay")
+  .classList.remove("show");
+}
+
+function go(id){
+
+ document
+  .querySelectorAll("main section")
+  .forEach(function(s){
+   s.classList.add("hidden");
+  });
+
+ document
+  .getElementById(id)
+  .classList.remove("hidden");
+
+ document
+  .querySelectorAll(".menuItem")
+  .forEach(function(b){
+   b.classList.remove("active");
+  });
+
+ let active=
+ document.querySelector(
+  '.menuItem[data-page="'+id+'"]'
+ );
+
+ if(active){
+  active.classList.add("active");
+ }
+
+ closeMenu();
+
+ if(id==="discover"){
+  renderDiscover();
+ }
+
+ if(id==="settings"){
+  refreshSettings();
+ }
+
+ window.scrollTo(0,0);
+}
+
+
+/* =====================================================
+   UNIVERSE
+===================================================== */
+
+function createUniverse(){
+
+ let name=document
+  .getElementById("universeName")
+  .value.trim();
+
+ let description=document
+  .getElementById("universeDescription")
+  .value.trim();
+
+ if(!name){
+
+  alert("Enter a universe name.");
+
+  return;
+ }
+
+ data.universe={
+  id:Date.now(),
+  name:name,
+  description:description,
+  owner:user.name
+ };
+
+ data.published=false;
+
+ saveData();
+
+ renderUniverse();
+
+ alert("Universe saved!");
+}
+
+
+function publishUniverse(){
+
+ if(!data.universe){
+
+  alert("Create a universe first.");
+
+  return;
+ }
+
+ data.published=!data.published;
+
+ saveData();
+
+ renderUniverse();
+ renderDiscover();
+}
+
+
+function deleteUniverse(){
+
+ if(!data.universe)return;
+
+ if(!confirm(
+  "Delete your universe and all its creations?"
+ ))return;
+
+ data=createEmptyData();
+
+ saveData();
+
+ renderAll();
+
+}
+
+
+/* =====================================================
+   CHARACTERS
+===================================================== */
+
+function createCharacter(){
+
+ let name=document
+  .getElementById("characterName")
+  .value.trim();
+
+ if(!name){
+
+  alert("Enter a character name.");
+
+  return;
+ }
+
+ data.characters.push({
+
+  id:Date.now(),
+
+  name:name,
+
+  type:
+   document.getElementById(
+    "characterType"
+   ).value,
+
+  powers:
+   document.getElementById(
+    "characterPowers"
+   ).value,
+
+  description:
+   document.getElementById(
+    "characterDescription"
+   ).value,
+
+  creator:user.name
+
+ });
+
+ saveData();
+
+ document.getElementById("characterName").value="";
+ document.getElementById("characterPowers").value="";
+ document.getElementById("characterDescription").value="";
+
+ renderCharacters();
+}
+
+
+function deleteCharacter(id){
+
+ if(!confirm("Delete this character?"))return;
+
+ data.characters=
+ data.characters.filter(
+  function(x){
+   return x.id!==id;
+  }
+ );
+
+ saveData();
+
+ renderCharacters();
+}
+
+
+/* =====================================================
+   POWERS
+===================================================== */
+
+function createPower(){
+
+ let name=document
+  .getElementById("powerName")
+  .value.trim();
+
+ if(!name){
+
+  alert("Enter a power name.");
+
+  return;
+ }
+
+ data.powers.push({
+
+  id:Date.now(),
+
+  name:name,
+
+  description:
+   document.getElementById(
+    "powerDescription"
+   ).value,
+
+  creator:user.name
+
+ });
+
+ saveData();
+
+ document.getElementById("powerName").value="";
+ document.getElementById("powerDescription").value="";
+
+ renderPowers();
+}
+
+
+function deletePower(id){
+
+ if(!confirm("Delete this power?"))return;
+
+ data.powers=
+ data.powers.filter(
+  function(x){
+   return x.id!==id;
+  }
+ );
+
+ saveData();
+
+ renderPowers();
+}
+
+
+/* =====================================================
+   TEAMS
+===================================================== */
+
+function createTeam(){
+
+ let name=document
+  .getElementById("teamName")
+  .value.trim();
+
+ if(!name){
+
+  alert("Enter a team name.");
+
+  return;
+ }
+
+ data.teams.push({
+
+  id:Date.now(),
+
+  name:name,
+
+  description:
+   document.getElementById(
+    "teamDescription"
+   ).value,
+
+  creator:user.name
+
+ });
+
+ saveData();
+
+ document.getElementById("teamName").value="";
+ document.getElementById("teamDescription").value="";
+
+ renderTeams();
+}
+
+
+function deleteTeam(id){
+
+ if(!confirm("Delete this team?"))return;
+
+ data.teams=
+ data.teams.filter(
+  function(x){
+   return x.id!==id;
+  }
+ );
+
+ saveData();
+
+ renderTeams();
+}
+
+
+/* =====================================================
+   LOCATIONS
+===================================================== */
+
+function createLocation(){
+
+ let name=document
+  .getElementById("locationName")
+  .value.trim();
+
+ if(!name){
+
+  alert("Enter a location name.");
+
+  return;
+ }
+
+ data.locations.push({
+
+  id:Date.now(),
+
+  name:name,
+
+  type:
+   document.getElementById(
+    "locationType"
+   ).value,
+
+  description:
+   document.getElementById(
+    "locationDescription"
+   ).value,
+
+  creator:user.name
+
+ });
+
+ saveData();
+
+ document.getElementById("locationName").value="";
+ document.getElementById("locationDescription").value="";
+
+ renderLocations();
+}
+
+
+function deleteLocation(id){
+
+ if(!confirm("Delete this location?"))return;
+
+ data.locations=
+ data.locations.filter(
+  function(x){
+   return x.id!==id;
+  }
+ );
+
+ saveData();
+
+ renderLocations();
+}
+
+
+/* =====================================================
+   VEXA
+===================================================== */
+
+function askVexa(){
+
+ let q=document
+  .getElementById("vexaPrompt")
+  .value.trim()
+  .toLowerCase();
+
+ if(!q){
+
+  alert("Tell VEXA what you want to create.");
+
+  return;
+ }
+
+ if(q.includes("twin")){
+
+  document.getElementById(
+   "vexaResult"
+  ).innerHTML=`
+
+  <div class="card">
+
+   <h2>☀️ Solaryn</h2>
+
+   <p><b>Type:</b> Hero</p>
+
+   <p>
+   Solar energy, flight, heat manipulation,
+   light generation and energy blasts.
+   </p>
+
+   <button class="red"
+   onclick="vexaAdd(
+   'Solaryn',
+   'Hero',
+   'Solar energy, flight, heat manipulation, light generation and energy blasts',
+   'The solar-powered twin.'
+   )">
+   ADD TO UNIVERSE
+   </button>
+
+  </div>
+
+  <div class="card">
+
+   <h2>🌙 Lunara</h2>
+
+   <p><b>Type:</b> Hero</p>
+
+   <p>
+   Lunar energy, gravity control,
+   shadow manipulation and moonlight projection.
+   </p>
+
+   <button class="red"
+   onclick="vexaAdd(
+   'Lunara',
+   'Hero',
+   'Lunar energy, gravity control, shadow manipulation and moonlight projection',
+   'The lunar-powered twin.'
+   )">
+   ADD TO UNIVERSE
+   </button>
+
+  </div>
+
+  `;
+
+  return;
+ }
+
+
+ if(q.includes("villain")||q.includes("evil")){
+
+  document.getElementById(
+   "vexaResult"
+  ).innerHTML=`
+
+  <div class="card">
+
+   <h2>☠️ Void Reaper</h2>
+
+   <p><b>Type:</b> Villain</p>
+
+   <p>
+   Void energy, teleportation,
+   energy absorption and darkness manipulation.
+   </p>
+
+   <button class="red"
+   onclick="vexaAdd(
+   'Void Reaper',
+   'Villain',
+   'Void energy, teleportation, energy absorption and darkness manipulation',
+   'A ruthless void villain.'
+   )">
+   ADD TO UNIVERSE
+   </button>
+
+  </div>
+
+  `;
+
+  return;
+ }
+
+
+ document.getElementById(
+  "vexaResult"
+ ).innerHTML=`
+
+ <div class="card">
+
+  <h2>🔥 Solaris</h2>
+
+  <p><b>Type:</b> Hero</p>
+
+  <p>
+  Solar energy, flight, super strength,
+  energy blasts and heat manipulation.
+  </p>
+
+  <button class="red"
+  onclick="vexaAdd(
+  'Solaris',
+  'Hero',
+  'Solar energy, flight, super strength, energy blasts and heat manipulation',
+  'A powerful solar hero.'
+  )">
+  ADD TO UNIVERSE
+  </button>
+
+ </div>
+
+ `;
+}
+
+
+function vexaAdd(
+ name,type,powers,description
+){
+
+ data.characters.push({
+
+  id:Date.now(),
+  name:name,
+  type:type,
+  powers:powers,
+  description:description,
+  creator:user.name
+
+ });
+
+ saveData();
+
+ renderCharacters();
+
+ alert(
+  name+" added to your universe."
+ );
+}
+
+
+/* =====================================================
+   RENDER UNIVERSE
+===================================================== */
+
+function renderUniverse(){
+
+ let box=document
+  .getElementById("universeDisplay");
+
+ if(!data.universe){
+
+  box.innerHTML=`
+  <div class="empty">
+  You have not created a universe yet.
+  </div>`;
+
+  return;
+ }
+
+ document.getElementById(
+  "universeName"
+ ).value=data.universe.name;
+
+ document.getElementById(
+  "universeDescription"
+ ).value=data.universe.description;
+
+ box.innerHTML=`
+
+ <div class="card">
+
+  <h2>🌌 ${safe(data.universe.name)}</h2>
+
+  <p>
+  ${safe(data.universe.description)}
+  </p>
+
+  <p class="creator">
+  CREATED BY ${safe(data.universe.owner)}
+  </p>
+
+  <p>
+  ${data.published?
+   "🌎 PUBLISHED":
+   "🔒 PRIVATE"}
+  </p>
+
+  <button class="red"
+  onclick="publishUniverse()">
+  ${data.published?
+   "UNPUBLISH":
+   "PUBLISH"}
+  </button>
+
+  <button
+  onclick="deleteUniverse()">
+  DELETE UNIVERSE
+  </button>
+
+ </div>
+
+ `;
+}
+
+
+/* =====================================================
+   RENDER CHARACTERS
+===================================================== */
+
+function renderCharacters(){
+
+ let box=document
+  .getElementById("characterList");
+
+ if(!data.characters.length){
+
+  box.innerHTML=
+  `<div class="empty">
+  No characters yet.
+  </div>`;
+
+  return;
+ }
+
+ box.innerHTML="";
+
+ data.characters.forEach(
+  function(c){
+
+   box.innerHTML+=`
+
+   <div class="card">
+
+    <h2>
+    🧑‍🚀 ${safe(c.name)}
+    </h2>
+
+    <p>
+    <b>Type:</b>
+    ${safe(c.type)}
+    </p>
+
+    <p>
+    <b>Powers:</b>
+    ${safe(c.powers)}
+    </p>
+
+    <p>
+    ${safe(c.description)}
+    </p>
+
+    <p class="creator">
+    CREATED BY ${safe(c.creator)}
+    </p>
+
+    <button
+    onclick="deleteCharacter(${c.id})">
+    DELETE
+    </button>
+
+   </div>
+
+   `;
+
+  }
+ );
+}
+
+
+/* =====================================================
+   RENDER POWERS
+===================================================== */
+
+function renderPowers(){
+
+ let box=document
+  .getElementById("powerList");
+
+ if(!data.powers.length){
+
+  box.innerHTML=
+  `<div class="empty">
+  No powers yet.
+  </div>`;
+
+  return;
+ }
+
+ box.innerHTML="";
+
+ data.powers.forEach(
+  function(p){
+
+   box.innerHTML+=`
+
+   <div class="card">
+
+    <h2>
+    ⚡ ${safe(p.name)}
+    </h2>
+
+    <p>
+    ${safe(p.description)}
+    </p>
+
+    <p class="creator">
+    CREATED BY ${safe(p.creator)}
+    </p>
+
+    <button
+    onclick="deletePower(${p.id})">
+    DELETE
+    </button>
+
+   </div>
+
+   `;
+
+  }
+ );
+}
+
+
+/* =====================================================
+   RENDER TEAMS
+===================================================== */
+
+function renderTeams(){
+
+ let box=document
+  .getElementById("teamList");
+
+ if(!data.teams.length){
+
+  box.innerHTML=
+  `<div class="empty">
+  No teams yet.
+  </div>`;
+
+  return;
+ }
+
+ box.innerHTML="";
+
+ data.teams.forEach(
+  function(t){
+
+   box.innerHTML+=`
+
+   <div class="card">
+
+    <h2>
+    👥 ${safe(t.name)}
+    </h2>
+
+    <p>
+    ${safe(t.description)}
+    </p>
+
+    <p class="creator">
+    CREATED BY ${safe(t.creator)}
+    </p>
+
+    <button
+    onclick="deleteTeam(${t.id})">
+    DELETE
+    </button>
+
+   </div>
+
+   `;
+
+  }
+ );
+}
+
+
+/* =====================================================
+   RENDER LOCATIONS
+===================================================== */
+
+function renderLocations(){
+
+ let box=document
+  .getElementById("locationList");
+
+ if(!data.locations.length){
+
+  box.innerHTML=
+  `<div class="empty">
+  No locations yet.
+  </div>`;
+
+  return;
+ }
+
+ box.innerHTML="";
+
+ data.locations.forEach(
+  function(l){
+
+   box.innerHTML+=`
+
+   <div class="card">
+
+    <h2>
+    🌍 ${safe(l.name)}
+    </h2>
+
+    <p>
+    <b>Type:</b>
+    ${safe(l.type)}
+    </p>
+
+    <p>
+    ${safe(l.description)}
+    </p>
+
+    <p class="creator">
+    CREATED BY ${safe(l.creator)}
+    </p>
+
+    <button
+    onclick="deleteLocation(${l.id})">
+    DELETE
+    </button>
+
+   </div>
+
+   `;
+
+  }
+ );
+}
+
+
+/* =====================================================
+   DISCOVER
+===================================================== */
+
+function renderDiscover(){
+
+ let box=document
+  .getElementById("discoverList");
+
+ if(!data.universe||!data.published){
+
+  box.innerHTML=`
+
+  <div class="empty">
+
+   <h2>No published universe</h2>
+
+   <p>
+   Publish your universe to make it public.
+   </p>
+
+  </div>
+
+  `;
+
+  return;
+ }
+
+ box.innerHTML=`
+
+ <div class="card">
+
+  <h1>
+  🌌 ${safe(data.universe.name)}
+  </h1>
+
+  <p>
+  ${safe(data.universe.description)}
+  </p>
+
+  <p class="creator">
+  PUBLISHED BY
+  ${safe(data.universe.owner)}
+  </p>
+
+  <hr>
+
+  <p>
+  🧑‍🚀 ${data.characters.length}
+  Characters
+  </p>
+
+  <p>
+  ⚡ ${data.powers.length}
+  Powers
+  </p>
+
+  <p>
+  👥 ${data.teams.length}
+  Teams
+  </p>
+
+  <p>
+  🌍 ${data.locations.length}
+  Locations
+  </p>
+
+  <p>
+  🗡️ ${data.weapons.length}
+  Weapons
+  </p>
+
+ </div>
+
+ `;
+}
+
+
+/* =====================================================
+   SETTINGS
+===================================================== */
+
+function saveSettings(){
+
+ localStorage.setItem(
+  "heroesVerseSettings",
+  JSON.stringify(settings)
+ );
+
+}
+
+function applySettings(){
+
+ document.documentElement
+  .style.setProperty(
+   "--accent",
+   settings.accent
+  );
+
+ document.documentElement
+  .style.setProperty(
+   "--size",
+   settings.textSize
+  );
+
+ document.body.classList.remove(
+  "light",
+  "highcontrast",
+  "noeffects"
+ );
+
+ if(settings.appearance==="light"){
+  document.body.classList.add("light");
+ }
+
+ if(settings.appearance==="system"){
+
+  if(
+   window.matchMedia &&
+   window.matchMedia(
+    "(prefers-color-scheme:light)"
+   ).matches
+  ){
+   document.body.classList.add("light");
+  }
+
+ }
+
+ if(!settings.effects ||
+    settings.reduce){
+
+  document.body.classList.add(
+   "noeffects"
+  );
+ }
+
+ if(settings.contrast){
+  document.body.classList.add(
+   "highcontrast"
+  );
+ }
+
+ refreshSettings();
+}
+
+
+function setAppearance(mode){
+
+ settings.appearance=mode;
+
+ saveSettings();
+
+ applySettings();
+}
+
+
+function changeTheme(color){
+
+ settings.accent=color;
+
+ saveSettings();
+
+ applySettings();
+}
+
+
+function setTextSize(size){
+
+ settings.textSize=size;
+
+ saveSettings();
+
+ applySettings();
+}
+
+
+function toggleSetting(name){
+
+ settings[name]=!settings[name];
+
+ saveSettings();
+
+ applySettings();
+}
+
+
+function toggleVisual(button){
+
+ button.classList.toggle("on");
+}
+
+
+function refreshSettings(){
+
+ let effects=document
+  .getElementById("effectsButton");
+
+ let stats=document
+  .getElementById("statsSwitch");
+
+ let identity=document
+  .getElementById("identitySwitch");
+
+ let mute=document
+  .getElementById("muteSwitch");
+
+ let contrast=document
+  .getElementById("contrastSwitch");
+
+ let reduce=document
+  .getElementById("reduceSwitch");
+
+ if(effects)
+  effects.classList.toggle(
+   "on",
+   settings.effects
+  );
+
+ if(stats)
+  stats.classList.toggle(
+   "on",
+   settings.stats
+  );
+
+ if(identity)
+  identity.classList.toggle(
+   "on",
+   settings.identity
+  );
+
+ if(mute)
+  mute.classList.toggle(
+   "on",
+   settings.mute
+  );
+
+ if(contrast)
+  contrast.classList.toggle(
+   "on",
+   settings.contrast
+  );
+
+ if(reduce)
+  reduce.classList.toggle(
+   "on",
+   settings.reduce
+  );
+
+ let color=document
+  .getElementById("themeColor");
+
+ if(color)
+  color.value=settings.accent;
+
+ let language=document
+  .getElementById("languageSelect");
+
+ if(language)
+  language.value=settings.language;
+}
+
+
+function audioSetting(type,value){
+
+ localStorage.setItem(
+  "heroesVerseAudio_"+type,
+  value
+ );
+}
+
+
+function setLanguage(language){
+
+ settings.language=language;
+
+ saveSettings();
+
+ alert(
+  "Language set to "+language+
+  ". Full interface translation can be connected next."
+ );
+}
+
+
+/* =====================================================
+   ACCOUNT SETTINGS
+===================================================== */
+
+function changeUsername(){
+
+ let newName=prompt(
+  "Enter your new username:"
+ );
+
+ if(!newName)return;
+
+ newName=newName.trim();
+
+ if(!newName)return;
+
+ let oldKey=
+ "heroesVerseAccount_"+
+ user.name.toLowerCase();
+
+ let oldAccount=
+ JSON.parse(
+  localStorage.getItem(oldKey)
+ );
+
+ let newKey=
+ "heroesVerseAccount_"+
+ newName.toLowerCase();
+
+ if(localStorage.getItem(newKey)){
+
+  alert("That username is already in use.");
+
+  return;
+ }
+
+ localStorage.setItem(
+  newKey,
+  JSON.stringify({
+   name:newName,
+   password:oldAccount.password
+  })
+ );
+
+ localStorage.setItem(
+  "heroesVerseData_"+
+  newName.toLowerCase(),
+  JSON.stringify(data)
+ );
+
+ localStorage.removeItem(oldKey);
+
+ user.name=newName;
+
+ localStorage.setItem(
+  "heroesVerseUser",
+  JSON.stringify(user)
+ );
+
+ data=JSON.parse(
+  localStorage.getItem(
+   "heroesVerseData_"+
+   newName.toLowerCase()
+  )
+ );
+
+ startApp();
+
+ alert("Username changed to "+newName);
+}
+
+
+function changePassword(){
+
+ let oldPassword=prompt(
+  "Enter your current password:"
+ );
+
+ if(oldPassword===null)return;
+
+ let key=
+ "heroesVerseAccount_"+
+ user.name.toLowerCase();
+
+ let account=
+ JSON.parse(
+  localStorage.getItem(key)
+ );
+
+ if(oldPassword!==account.password){
+
+  alert("Incorrect current password.");
+
+  return;
+ }
+
+ let newPassword=prompt(
+  "Enter your new password:"
+ );
+
+ if(!newPassword)return;
+
+ account.password=newPassword;
+
+ localStorage.setItem(
+  key,
+  JSON.stringify(account)
+ );
+
+ alert("Password changed successfully.");
+}
+
+
+/* =====================================================
+   DATA
+===================================================== */
+
+function resetData(){
+
+ if(!confirm(
+  "Reset all your HeroesVerse creations?"
+ ))return;
+
+ data=createEmptyData();
+
+ saveData();
+
+ renderAll();
+
+ alert("Your local creation data was reset.");
+}
+
+
+function downloadData(){
+
+ let file=new Blob(
+  [JSON.stringify(data,null,2)],
+  {type:"application/json"}
+ );
+
+ let url=
+ URL.createObjectURL(file);
+
+ let a=document.createElement("a");
+
+ a.href=url;
+
+ a.download=
+ "HeroesVerse-"+user.name+".json";
+
+ a.click();
+
+ URL.revokeObjectURL(url);
+}
+
+
+/* =====================================================
+   SECURITY
+===================================================== */
+
+function safe(text){
+
+ return String(text||"")
+ .replace(/&/g,"&amp;")
+ .replace(/</g,"&lt;")
+ .replace(/>/g,"&gt;")
+ .replace(/"/g,"&quot;")
+ .replace(/'/g,"&#039;");
+}
+
+
+/* =====================================================
+   RENDER ALL
+===================================================== */
+
+function renderAll(){
+
+ renderUniverse();
+ renderCharacters();
+ renderPowers();
+ renderTeams();
+ renderLocations();
+ renderDiscover();
+
+}
+
+
+/* =====================================================
+   AUTO LOGIN
+===================================================== */
+
+if(user){
+
+ loadData();
+
+ startApp();
+
+}
+
+</script>
+
+</body>
+</html>
